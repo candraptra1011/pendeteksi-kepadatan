@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Hasil Analisis</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>Hasil Analisis Kepadatan Lalu Lintas</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <video width="100%" controls>
+
+                <source src="{{ hasil.video }}" type="video/mp4">
+
+            </video>
+
+            <hr>
+
+            <table class="table table-bordered">
+
+                <tr>
+                    <th>Rata-rata Kendaraan</th>
+                    <td>{{ hasil.average }}</td>
+                </tr>
+
+                <tr>
+                    <th>Mobil</th>
+                    <td>{{ hasil.car }}</td>
+                </tr>
+
+                <tr>
+                    <th>Motor</th>
+                    <td>{{ hasil.motorcycle }}</td>
+                </tr>
+
+                <tr>
+                    <th>Bus</th>
+                    <td>{{ hasil.bus }}</td>
+                </tr>
+
+                <tr>
+                    <th>Truk</th>
+                    <td>{{ hasil.truck }}</td>
+                </tr>
+
+                <tr>
+                    <th>Kategori Kepadatan</th>
+                    <td>{{ hasil.density }}</td>
+                </tr>
+
+                <tr>
+                    <th>Lampu Hijau</th>
+                    <td>{{ hasil.green }} Detik</td>
+                </tr>
+
+                <tr>
+                    <th>Lampu Merah</th>
+                    <td>{{ hasil.red }} Detik</td>
+                </tr>
+
+            </table>
+
+            <a href="/" class="btn btn-success">
+
+                Upload Video Lagi
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
