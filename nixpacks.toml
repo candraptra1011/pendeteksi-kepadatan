@@ -1,5 +1,12 @@
 [phases.setup]
-nixPkgs = ["python311", "libxcb"]
+aptPkgs = [
+  "libgl1",
+  "libglib2.0-0",
+  "libsm6",
+  "libxext6",
+  "libxrender-dev",
+  "libxcb1"
+]
 
 [start]
 cmd = "python app.py"
