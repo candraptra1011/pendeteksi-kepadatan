@@ -32,31 +32,24 @@ def process_video(video_path):
     if not cap.isOpened():
 
         return {
-
             "video": "",
-
             "average": 0,
-
             "car": 0,
-
             "motorcycle": 0,
-
             "bus": 0,
-
             "truck": 0,
-
             "density": "Error",
-
             "green": 0,
-
             "red": 0
-
         }
 
     fps = int(cap.get(cv2.CAP_PROP_FPS))
 
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    # Mencegah pembagian dengan nol jika FPS video tidak terbaca
+    if fps <= 0:
+        fps = 30
 
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     os.makedirs("static/output", exist_ok=True)
@@ -64,26 +57,10 @@ def process_video(video_path):
     output_path = "static/output/hasil.mp4"
 
     writer = cv2.VideoWriter(
-
         output_path,
-
         cv2.VideoWriter_fourcc(*"mp4v"),
-
         fps,
-
         (width, height)
-
-    )
-
-    cv2.namedWindow(
-        "Sistem Analisis Kepadatan Lalu Lintas",
-        cv2.WINDOW_NORMAL
-    )
-
-    cv2.resizeWindow(
-        "Sistem Analisis Kepadatan Lalu Lintas",
-        1000,
-        600
     )
 
     # ==========================================
@@ -126,29 +103,19 @@ def process_video(video_path):
         frame_count += 1
 
         results = model.track(
-
             frame,
-
             persist=True,
-
             tracker="bytetrack.yaml",
-
             classes=[2, 3, 5, 7],
-
             conf=0.35,
-
             verbose=False
-
         )
 
         result = results[0]
 
         car = 0
-
         motorcycle = 0
-
         bus = 0
-
         truck = 0
 
         if result.boxes.cls is not None:
@@ -160,7 +127,6 @@ def process_video(video_path):
             ids = None
 
             if result.boxes.id is not None:
-
                 ids = result.boxes.id.cpu().numpy().astype(int)
 
             for i, (box, cls) in enumerate(zip(boxes, classes)):
@@ -169,10 +135,6 @@ def process_video(video_path):
 
                 cx = (x1 + x2) // 2
                 cy = (y1 + y2) // 2
-
-                # ==========================================
-                # CEK APAKAH BOUNDING BOX BERADA DI DALAM ROI
-                # ==========================================
 
                 # ==========================================
                 # CEK APAKAH BOUNDING BOX BERIRISAN DENGAN ROI
@@ -213,11 +175,8 @@ def process_video(video_path):
                 )
 
                 if ids is not None:
-
                     text = f"{label} ID:{ids[i]}"
-
                 else:
-
                     text = label
 
                 cv2.putText(
@@ -331,12 +290,12 @@ def process_video(video_path):
             frame_truck.clear()
 
         # ==========================================
-        # TAMPILKAN INFORMASI
+        # TAMPILKAN INFORMASI PADA VIDEO OUTPUT
         # ==========================================
 
         cv2.putText(
             frame,
-            f"Peak Vehicle : {max(frame_total) if len(frame_total)>0 else total}",
+            f"Peak Vehicle : {max(frame_total) if len(frame_total) > 0 else total}",
             (20, 40),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.8,
@@ -394,15 +353,11 @@ def process_video(video_path):
             2
         )
 
+        # ==========================================
+        # SIMPAN FRAME KE VIDEO OUTPUT
+        # ==========================================
+
         writer.write(frame)
-
-        cv2.imshow(
-            "Sistem Analisis Kepadatan Lalu Lintas",
-            frame
-        )
-
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
 
     # ==========================================
     # SELESAI MEMBACA VIDEO
@@ -412,7 +367,8 @@ def process_video(video_path):
 
     writer.release()
 
-    cv2.destroyAllWindows()
+    # Tidak menggunakan cv2.destroyAllWindows()
+    # karena aplikasi berjalan di server tanpa GUI.
 
     # ==========================================
     # SISA FRAME YANG BELUM 1 DETIK
@@ -439,6 +395,24 @@ def process_video(video_path):
         truck_per_second.append(
             max(frame_truck)
         )
+
+    # ==========================================
+    # CEK HASIL DETEKSI
+    # ==========================================
+
+    if len(total_per_second) == 0:
+
+        return {
+            "video": "/" + output_path.replace("\\", "/"),
+            "average": 0,
+            "car": 0,
+            "motorcycle": 0,
+            "bus": 0,
+            "truck": 0,
+            "density": "Error",
+            "green": 0,
+            "red": 0
+        }
 
     # ==========================================
     # HITUNG RATA-RATA DARI NILAI TERTINGGI TIAP DETIK
@@ -469,9 +443,17 @@ def process_video(video_path):
         len(truck_per_second)
     )
 
+    # ==========================================
+    # TENTUKAN KEPADATAN
+    # ==========================================
+
     density = get_density(
         average_vehicle
     )
+
+    # ==========================================
+    # REKOMENDASI LAMPU LALU LINTAS
+    # ==========================================
 
     traffic = get_traffic_light(
         density
