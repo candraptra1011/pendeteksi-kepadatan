@@ -1,4 +1,4 @@
-MODEL_PATH = "yolov5su.pt"
+MODEL_PATH = "yolo26s.pt"
 
 UPLOAD_FOLDER = "uploads"
 

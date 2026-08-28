@@ -9,7 +9,8 @@ import os
 # LOAD MODEL
 # ==========================================
 
-model = YOLO("yolov5su.pt")
+model = YOLO("yolo26s.pt")
+print("MODEL YANG DIGUNAKAN:", model.ckpt_path)
 
 # ==========================================
 # ROI (AREA PENGAMATAN)
@@ -417,38 +418,22 @@ def process_video(video_path):
     # ==========================================
     # HITUNG RATA-RATA DARI NILAI TERTINGGI TIAP DETIK
     # ==========================================
+    total_vehicle = sum(total_per_second)
 
-    average_vehicle = round(
-        sum(total_per_second) /
-        len(total_per_second)
-    )
+    total_car = sum(car_per_second)
 
-    average_car = round(
-        sum(car_per_second) /
-        len(car_per_second)
-    )
+    total_motorcycle = sum(motorcycle_per_second)
 
-    average_motorcycle = round(
-        sum(motorcycle_per_second) /
-        len(motorcycle_per_second)
-    )
+    total_bus = sum(bus_per_second)
 
-    average_bus = round(
-        sum(bus_per_second) /
-        len(bus_per_second)
-    )
-
-    average_truck = round(
-        sum(truck_per_second) /
-        len(truck_per_second)
-    )
+    total_truck = sum(truck_per_second)
 
     # ==========================================
     # TENTUKAN KEPADATAN
     # ==========================================
 
     density = get_density(
-        average_vehicle
+        total_vehicle
     )
 
     # ==========================================
@@ -467,15 +452,11 @@ def process_video(video_path):
 
         "video": "/" + output_path.replace("\\", "/"),
 
-        "average": average_vehicle,
-
-        "car": average_car,
-
-        "motorcycle": average_motorcycle,
-
-        "bus": average_bus,
-
-        "truck": average_truck,
+        "average": total_vehicle,
+        "car": total_car,
+        "motorcycle": total_motorcycle,
+        "bus": total_bus,
+        "truck": total_truck,
 
         "density": density,
 
