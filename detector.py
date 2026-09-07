@@ -11,7 +11,6 @@ import os
 
 model = YOLO("yolo26s.pt")
 print("MODEL YANG DIGUNAKAN:", model.ckpt_path)
-
 # ==========================================
 # ROI (AREA PENGAMATAN)
 # ==========================================
@@ -248,6 +247,7 @@ def process_video(video_path):
         frame_bus.append(bus)
 
         frame_truck.append(truck)
+        
 
         # ==========================================
         # SETIAP 1 DETIK AMBIL NILAI TERTINGGI
@@ -360,6 +360,19 @@ def process_video(video_path):
 
         writer.write(frame)
 
+        # ==========================================
+        # TAMPILKAN WINDOW
+        # ==========================================
+
+        # cv2.imshow(
+        #     "Deteksi Kendaraan",
+        #     frame
+        # )
+
+        # # Tekan Q untuk menghentikan video
+        # if cv2.waitKey(1) & 0xFF == ord("q"):
+        #     break
+
     # ==========================================
     # SELESAI MEMBACA VIDEO
     # ==========================================
@@ -368,8 +381,7 @@ def process_video(video_path):
 
     writer.release()
 
-    # Tidak menggunakan cv2.destroyAllWindows()
-    # karena aplikasi berjalan di server tanpa GUI.
+    # cv2.destroyAllWindows()
 
     # ==========================================
     # SISA FRAME YANG BELUM 1 DETIK
@@ -418,7 +430,8 @@ def process_video(video_path):
     # ==========================================
     # HITUNG RATA-RATA DARI NILAI TERTINGGI TIAP DETIK
     # ==========================================
-    total_vehicle = sum(total_per_second)
+    
+    # total_vehicle = sum(total_per_second)
 
     total_car = sum(car_per_second)
 
@@ -427,6 +440,13 @@ def process_video(video_path):
     total_bus = sum(bus_per_second)
 
     total_truck = sum(truck_per_second)
+
+    total_vehicle = (
+        total_car
+        + total_motorcycle
+        + total_bus
+        + total_truck
+    )
 
     # ==========================================
     # TENTUKAN KEPADATAN
